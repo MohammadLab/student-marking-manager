@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Marks Manager</h1>
+        
+        <div class="search-section">
+            <input type="text" id="studentSearch" placeholder="Search student name...">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <div class="marks-section" id="marksSection" style="display: none;">
+            <h2>Add Marks for: <span id="selectedStudentName"></span></h2>
+            <div class="mark-input">
+                <select id="labAssignment">
+                    <option value="lab1">Lab 1</option>
+                    <option value="lab2">Lab 2</option>
+                    <option value="lab3">Lab 3</option>
+                    <option value="lab4">Lab 4</option>
+                    <option value="lab5">Lab 5</option>
+                </select>
+                <input type="number" id="markInput" min="0" max="100" placeholder="Enter mark">
+                <button onclick="addMark()">Add Mark</button>
+            </div>
+            
+            <div class="current-marks">
+                <h3>Current Marks</h3>
+                <div id="marksTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedStudentId = null;
+
+        document.getElementById('studentSearch').addEventListener('input', async (e) => {
+            const query = e.target.value;
+            if (query.length < 2) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+
+            const response = await fetch(`/api/search_student?query=${query}`);
+            const students = await response.json();
+            
+            const resultsHtml = students.map(student => 
+                `<div class="student-result" onclick="selectStudent(${student.student_id}, '${student.name}')">
+                    ${student.name}
+                </div>`
+            ).join('');
+            
+            document.getElementById('searchResults').innerHTML = resultsHtml;
+        });
+
+        async function selectStudent(studentId, name) {
+            selectedStudentId = studentId;
+            document.getElementById('selectedStudentName').textContent = name;
+            document.getElementById('marksSection').style.display = 'block';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('studentSearch').value = name;
+            
+            // Load existing marks
+            await loadMarks(studentId);
+        }
+
+        async function loadMarks(studentId) {
+            const response = await fetch(`/api/get_marks/${studentId}`);
+            const marks = await response.json();
+            
+            const marksHtml = marks.map(mark => 
+                `<div class="mark-row">
+                    <span>${mark.lab_name}: ${mark.mark}%</span>
+                </div>`
+            ).join('');
+            
+            document.getElementById('marksTable').innerHTML = marksHtml || '<p>No marks recorded yet.</p>';
+        }
+
+        async function addMark() {
+            if (!selectedStudentId) return;
+
+            const labName = document.getElementById('labAssignment').value;
+            const mark = document.getElementById('markInput').value;
+
+            if (!mark) {
+                alert('Please enter a mark');
+                return;
+            }
+
+            const response = await fetch('/api/add_mark', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    student_id: selectedStudentId,
+                    lab_name: labName,
+                    mark: parseInt(mark)
+                })
+            });
+
+            if (response.ok) {
+                document.getElementById('markInput').value = '';
+                await loadMarks(selectedStudentId);
+            }
+        }
+    </script>
+</body>
+</html>

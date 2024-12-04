@@ -89,4 +89,35 @@ def get_marks(student_id):
     student_marks = marks_df[marks_df['student_id'] == int(student_id)]
     return jsonify(student_marks.to_dict('records'))
 
+@app.route('/api/all_students_marks')
+def all_students_marks():
+    students_df = pd.read_csv('students.csv')
+    marks_df = pd.read_csv('marks.csv')
+    labs_df = pd.read_csv('labs.csv')
+    
+    # Create a list to store all student data
+    result = []
+    
+    for _, student in students_df.iterrows():
+        student_data = {
+            'student_id': student['student_id'],
+            'name': student['name'],
+            'marks': {}
+        }
+        
+        # Get all marks for this student
+        student_marks = marks_df[marks_df['student_id'] == student['student_id']]
+        
+        # Initialize all labs with None (no mark)
+        for _, lab in labs_df.iterrows():
+            student_data['marks'][lab['lab_name']] = None
+            
+        # Fill in the actual marks
+        for _, mark in student_marks.iterrows():
+            student_data['marks'][mark['lab_name']] = mark['mark']
+            
+        result.append(student_data)
+    
+    return jsonify(result)
+
 # Removed direct running since we now use main.py

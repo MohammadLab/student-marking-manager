@@ -56,9 +56,60 @@
                 <div id="marksTable"></div>
             </div>
         </div>
+
+        <div class="students-table-section">
+            <h2>All Students</h2>
+            <div class="table-container">
+                <table id="studentsTable">
+                    <thead>
+                        <tr id="tableHeader">
+                            <th>Student Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
+        // Load the students table when page loads
+        window.addEventListener('load', loadStudentsTable);
+        
+        async function loadStudentsTable() {
+            const [studentsResponse, labsResponse] = await Promise.all([
+                fetch('/api/all_students_marks'),
+                fetch('/api/labs')
+            ]);
+            
+            const studentsData = await studentsResponse.json();
+            const labs = await labsResponse.json();
+            
+            // Set up table header with lab columns
+            const headerRow = document.getElementById('tableHeader');
+            headerRow.innerHTML = '<th>Student Name</th>';
+            labs.forEach(lab => {
+                headerRow.innerHTML += `<th>${lab.lab_name}</th>`;
+            });
+            
+            // Fill table body
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            studentsData.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${student.name}</td>`;
+                
+                labs.forEach(lab => {
+                    const mark = student.marks[lab.lab_name];
+                    row.innerHTML += `<td>${mark !== null ? mark + '%' : '-'}</td>`;
+                });
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
         let selectedStudentId = null;
         
         async function createStudent() {

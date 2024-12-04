@@ -52,5 +52,4 @@ def get_marks(student_id):
     student_marks = marks_df[marks_df['student_id'] == int(student_id)]
     return jsonify(student_marks.to_dict('records'))
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Removed direct running since we now use main.py

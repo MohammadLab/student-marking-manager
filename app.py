@@ -9,6 +9,8 @@ if not os.path.exists('students.csv'):
     pd.DataFrame(columns=['student_id', 'name']).to_csv('students.csv', index=False)
 if not os.path.exists('marks.csv'):
     pd.DataFrame(columns=['student_id', 'lab_name', 'mark']).to_csv('marks.csv', index=False)
+if not os.path.exists('labs.csv'):
+    pd.DataFrame(columns=['lab_name']).to_csv('labs.csv', index=False)
 
 @app.route('/')
 def index():
@@ -44,6 +46,24 @@ def add_mark():
         marks_df = pd.concat([marks_df, new_mark], ignore_index=True)
     
     marks_df.to_csv('marks.csv', index=False)
+    return jsonify({"status": "success"})
+
+@app.route('/api/labs', methods=['GET'])
+def get_labs():
+    labs = pd.read_csv('labs.csv')
+    return jsonify(labs.to_dict('records'))
+
+@app.route('/api/labs', methods=['POST'])
+def create_lab():
+    data = request.json
+    labs_df = pd.read_csv('labs.csv')
+    
+    if data['lab_name'] in labs_df['lab_name'].values:
+        return jsonify({"status": "error", "message": "Lab already exists"}), 400
+        
+    new_lab = pd.DataFrame([{'lab_name': data['lab_name']}])
+    labs_df = pd.concat([labs_df, new_lab], ignore_index=True)
+    labs_df.to_csv('labs.csv', index=False)
     return jsonify({"status": "success"})
 
 @app.route('/api/get_marks/<student_id>')

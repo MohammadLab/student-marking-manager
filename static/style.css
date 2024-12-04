@@ -14,6 +14,41 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.labs-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.labs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.lab-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.create-lab {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.create-lab input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
 h1 {
     color: #333;
     text-align: center;

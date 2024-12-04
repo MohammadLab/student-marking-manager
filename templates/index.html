@@ -10,6 +10,17 @@
     <div class="container">
         <h1>Student Marks Manager</h1>
         
+        <div class="labs-section">
+            <h2>Labs</h2>
+            <div class="labs-container">
+                <div id="labsList"></div>
+                <div class="create-lab">
+                    <input type="text" id="newLabName" placeholder="New lab name...">
+                    <button onclick="createLab()">Create Lab</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="search-section">
             <input type="text" id="studentSearch" placeholder="Search student name...">
             <div id="searchResults" class="search-results"></div>
@@ -38,6 +49,55 @@
 
     <script>
         let selectedStudentId = null;
+        
+        // Load labs when page loads
+        window.addEventListener('load', loadLabs);
+        
+        async function loadLabs() {
+            const response = await fetch('/api/labs');
+            const labs = await response.json();
+            
+            const labsHtml = labs.map(lab => 
+                `<div class="lab-item">
+                    <span>${lab.lab_name}</span>
+                </div>`
+            ).join('');
+            
+            document.getElementById('labsList').innerHTML = labsHtml || '<p>No labs created yet.</p>';
+            
+            // Update the lab assignment dropdown
+            const labSelect = document.getElementById('labAssignment');
+            labSelect.innerHTML = labs.map(lab => 
+                `<option value="${lab.lab_name}">${lab.lab_name}</option>`
+            ).join('');
+        }
+        
+        async function createLab() {
+            const labName = document.getElementById('newLabName').value.trim();
+            
+            if (!labName) {
+                alert('Please enter a lab name');
+                return;
+            }
+            
+            const response = await fetch('/api/labs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    lab_name: labName
+                })
+            });
+            
+            if (response.ok) {
+                document.getElementById('newLabName').value = '';
+                await loadLabs();
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to create lab');
+            }
+        }
 
         document.getElementById('studentSearch').addEventListener('input', async (e) => {
             const query = e.target.value;

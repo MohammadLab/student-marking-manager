@@ -69,6 +69,13 @@ body {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+.lab-item.selected {
+    background-color: #15803d;
+    border-color: #22c55e;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
 .create-lab {
     display: flex;
     gap: 10px;

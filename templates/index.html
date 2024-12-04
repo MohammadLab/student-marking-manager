@@ -62,7 +62,7 @@
             const labs = await response.json();
             
             const labsHtml = labs.map(lab => 
-                `<div class="lab-item">
+                `<div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
                     ${lab.lab_name}
                 </div>`
             ).join('');
@@ -76,6 +76,15 @@
             ).join('');
         }
         
+        function selectLab(element, labName) {
+            // Remove selected class from all labs
+            document.querySelectorAll('.lab-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            // Add selected class to clicked lab
+            element.classList.add('selected');
+        }
+
         async function createLab() {
             const labName = document.getElementById('newLabName').value.trim();
             

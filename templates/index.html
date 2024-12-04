@@ -21,6 +21,16 @@
                 </div>
             </div>
         </div>
+
+        <div class="mark-input-section" id="markInputSection" style="display: none;">
+            <h2>Add Mark</h2>
+            <div class="mark-input-container">
+                <p>Student: <span id="selectedStudentName"></span></p>
+                <p>Lab: <span id="selectedLabName"></span></p>
+                <input type="number" id="markValue" min="0" max="100" placeholder="Enter mark (0-100)">
+                <button onclick="submitMark()">Submit Mark</button>
+            </div>
+        </div>
         
         <div class="student-section">
             <div class="create-student">
@@ -38,18 +48,7 @@
         </div>
 
         <div class="marks-section" id="marksSection" style="display: none;">
-            <h2>Add Marks for: <span id="selectedStudentName"></span></h2>
-            <div class="mark-input">
-                <select id="labAssignment">
-                    <option value="lab1">Lab 1</option>
-                    <option value="lab2">Lab 2</option>
-                    <option value="lab3">Lab 3</option>
-                    <option value="lab4">Lab 4</option>
-                    <option value="lab5">Lab 5</option>
-                </select>
-                <input type="number" id="markInput" min="0" max="100" placeholder="Enter mark">
-                <button onclick="addMark()">Add Mark</button>
-            </div>
+            <h2>Current Marks for: <span id="selectedStudentName"></span></h2>
             
             <div class="current-marks">
                 <h3>Current Marks</h3>
@@ -147,13 +146,8 @@
             const labs = await response.json();
             
             const labsHtml = labs.map(lab => 
-                `<div class="lab-container">
-                    <div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
-                        ${lab.lab_name}
-                    </div>
-                    <button class="mark-button" onclick="showMarkInput('${lab.lab_name}')" style="display: none;">
-                        <i class="fas fa-plus"></i> Add Mark
-                    </button>
+                `<div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
+                    ${lab.lab_name}
                 </div>`
             ).join('');
             
@@ -166,38 +160,42 @@
             ).join('');
         }
         
+        let selectedLabName = null;
+
         function selectLab(element, labName) {
             // Remove selected class from all labs
             document.querySelectorAll('.lab-item').forEach(item => {
                 item.classList.remove('selected');
             });
-            // Hide all mark buttons
-            document.querySelectorAll('.mark-button').forEach(btn => {
-                btn.style.display = 'none';
-            });
             // Add selected class to clicked lab
             element.classList.add('selected');
-            // Show mark button for selected lab
-            element.parentElement.querySelector('.mark-button').style.display = 'block';
+            selectedLabName = labName;
+            
+            // Show mark input section if both student and lab are selected
+            updateMarkInputVisibility();
         }
 
-        function showMarkInput(labName) {
-            const mark = prompt(`Enter mark for ${labName}:`);
-            if (mark === null) return;  // User cancelled
-            
-            const numMark = parseInt(mark);
-            if (isNaN(numMark) || numMark < 0 || numMark > 100) {
-                alert('Please enter a valid mark between 0 and 100');
+        function updateMarkInputVisibility() {
+            const markInputSection = document.getElementById('markInputSection');
+            if (selectedStudentId && selectedLabName) {
+                markInputSection.style.display = 'block';
+                document.getElementById('selectedLabName').textContent = selectedLabName;
+            } else {
+                markInputSection.style.display = 'none';
+            }
+        }
+
+        async function submitMark() {
+            if (!selectedStudentId || !selectedLabName) {
+                alert('Please select both a student and a lab');
                 return;
             }
 
-            // Add the mark
-            addMarkForLab(labName, numMark);
-        }
+            const markInput = document.getElementById('markValue');
+            const mark = parseInt(markInput.value);
 
-        async function addMarkForLab(labName, mark) {
-            if (!selectedStudentId) {
-                alert('Please select a student first');
+            if (isNaN(mark) || mark < 0 || mark > 100) {
+                alert('Please enter a valid mark between 0 and 100');
                 return;
             }
 
@@ -208,14 +206,16 @@
                 },
                 body: JSON.stringify({
                     student_id: selectedStudentId,
-                    lab_name: labName,
+                    lab_name: selectedLabName,
                     mark: mark
                 })
             });
 
             if (response.ok) {
+                markInput.value = '';
                 await loadMarks(selectedStudentId);
                 await loadStudentsTable();
+                alert('Mark submitted successfully');
             } else {
                 alert('Failed to add mark');
             }

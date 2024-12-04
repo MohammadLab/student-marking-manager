@@ -182,10 +182,31 @@ h1 {
     margin-top: 20px;
 }
 
-.mark-input {
+.mark-input-section {
+    margin-top: 40px;
+    padding: 30px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mark-input-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mark-input-container p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.mark-input-container input {
+    max-width: 200px;
+}
+
+.mark-input-container button {
+    align-self: flex-start;
 }
 
 select, input[type="number"], input[type="text"] {

@@ -38,12 +38,10 @@
                 <button onclick="createStudent()"><i class="fas fa-user-plus"></i> Add Student</button>
             </div>
             
-            <div class="search-section">
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="studentSearch" placeholder="Search student name...">
-                </div>
-                <div id="searchResults" class="search-results"></div>
+            <div class="student-select-section">
+                <select id="studentSelect" onchange="handleStudentSelect(this)">
+                    <option value="">Select a student...</option>
+                </select>
             </div>
         </div>
 
@@ -131,6 +129,7 @@
             
             if (response.ok) {
                 document.getElementById('newStudentName').value = '';
+                await loadStudentsDropdown();
                 alert('Student created successfully');
             } else {
                 const error = await response.json();
@@ -248,24 +247,31 @@
             }
         }
 
-        document.getElementById('studentSearch').addEventListener('input', async (e) => {
-            const query = e.target.value;
-            if (query.length < 2) {
-                document.getElementById('searchResults').innerHTML = '';
-                return;
-            }
-
-            const response = await fetch(`/api/search_student?query=${query}`);
+        // Load students dropdown when page loads
+        window.addEventListener('load', loadStudentsDropdown);
+        
+        async function loadStudentsDropdown() {
+            const response = await fetch('/api/students');
             const students = await response.json();
             
-            const resultsHtml = students.map(student => 
-                `<div class="student-result" onclick="selectStudent(${student.student_id}, '${student.name}')">
-                    ${student.name}
-                </div>`
-            ).join('');
-            
-            document.getElementById('searchResults').innerHTML = resultsHtml;
-        });
+            const studentSelect = document.getElementById('studentSelect');
+            studentSelect.innerHTML = '<option value="">Select a student...</option>' +
+                students.map(student => 
+                    `<option value="${student.student_id}" data-name="${student.name}">
+                        ${student.name}
+                    </option>`
+                ).join('');
+        }
+
+        function handleStudentSelect(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            if (selectedOption.value) {
+                selectStudent(
+                    parseInt(selectedOption.value), 
+                    selectedOption.dataset.name
+                );
+            }
+        }
 
         async function selectStudent(studentId, name) {
             selectedStudentId = studentId;

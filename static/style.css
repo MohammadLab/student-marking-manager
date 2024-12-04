@@ -139,40 +139,35 @@ h1 {
     color: #ffffff;
 }
 
-.search-section {
-    margin-bottom: 20px;
-    position: relative;
+.student-select-section {
+    margin: 20px 0;
 }
 
-#studentSearch {
+#studentSelect {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: #404040;
-    color: #e0e0e0;
-}
-
-.search-results {
-    position: absolute;
-    width: 100%;
-    background: #2d2d2d;
-    border: 1px solid #555;
-    border-top: none;
-    border-radius: 0 0 4px 4px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-}
-
-.student-result {
-    padding: 10px;
+    padding: 12px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: #252525;
+    color: #ffffff;
+    font-size: 1rem;
     cursor: pointer;
 }
 
-.student-result:hover {
-    background-color: #404040;
+#studentSelect:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#studentSelect:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+#studentSelect option {
+    background-color: #252525;
+    color: #ffffff;
+    padding: 12px;
 }
 
 .marks-section {

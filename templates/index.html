@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Marks Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -15,14 +16,17 @@
             <div class="labs-container">
                 <div id="labsList"></div>
                 <div class="create-lab">
-                    <input type="text" id="newLabName" placeholder="New lab name...">
-                    <button onclick="createLab()">Create Lab</button>
+                    <input type="text" id="newLabName" placeholder="Enter new lab name...">
+                    <button onclick="createLab()"><i class="fas fa-plus"></i> Create Lab</button>
                 </div>
             </div>
         </div>
         
         <div class="search-section">
-            <input type="text" id="studentSearch" placeholder="Search student name...">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="studentSearch" placeholder="Search student name...">
+            </div>
             <div id="searchResults" class="search-results"></div>
         </div>
 

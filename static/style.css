@@ -1,25 +1,35 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #1a1a1a;
-    color: #e0e0e0;
+    padding: 0;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    min-height: 100vh;
+    line-height: 1.6;
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #2d2d2d;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: #161616;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .labs-section {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #363636;
-    border-radius: 8px;
+    margin-bottom: 40px;
+    padding: 30px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.labs-section:hover {
+    transform: translateY(-2px);
 }
 
 .labs-container {
@@ -39,19 +49,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    background-color: #404040;
-    border: 1px solid #555;
-    border-radius: 4px;
+    padding: 24px;
+    background-color: #252525;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     aspect-ratio: 1;
     text-align: center;
     word-break: break-word;
-    color: #e0e0e0;
-    transition: background-color 0.2s;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .lab-item:hover {
-    background-color: #505050;
+    background-color: #2c2c2c;
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .create-lab {
@@ -124,25 +139,44 @@ h1 {
     margin-bottom: 20px;
 }
 
-select, input[type="number"] {
-    padding: 8px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #404040;
-    color: #e0e0e0;
+select, input[type="number"], input[type="text"] {
+    padding: 12px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background-color: #252525;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+select:focus, input[type="number"]:focus, input[type="text"]:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 button {
-    background-color: #2196F3;
+    background-color: #2563eb;
     color: white;
     border: none;
     cursor: pointer;
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
 }
 
 button:hover {
-    background-color: #1976D2;
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .current-marks {
@@ -157,4 +191,65 @@ button:hover {
 h2, h3 {
     color: #e0e0e0;
     margin-bottom: 15px;
+}
+.search-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#studentSearch {
+    padding-left: 45px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4a4a4a;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                box-shadow 0.3s ease, 
+                transform 0.3s ease;
+}
+
+/* Modern focus styles */
+*:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+/* Loading animation */
+@keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.loading {
+    background: linear-gradient(90deg, #1e1e1e 0%, #252525 50%, #1e1e1e 100%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
 }

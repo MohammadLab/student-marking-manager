@@ -27,13 +27,24 @@ body {
     gap: 15px;
 }
 
+#labsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    max-width: 100%;
+}
+
 .lab-item {
     display: flex;
     align-items: center;
-    padding: 10px;
+    justify-content: center;
+    padding: 20px;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 4px;
+    aspect-ratio: 1;
+    text-align: center;
+    word-break: break-word;
 }
 
 .create-lab {

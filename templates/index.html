@@ -44,15 +44,12 @@
         </div>
         
         <div class="student-section">
-            <div class="create-student">
-                <input type="text" id="newStudentName" placeholder="Enter student name...">
-                <button onclick="createStudent()"><i class="fas fa-user-plus"></i> Add Student</button>
-            </div>
-            
-            <div class="student-select-section">
-                <select id="studentSelect" onchange="handleStudentSelect(this)">
-                    <option value="">Select a student...</option>
-                </select>
+            <div class="student-search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="studentSearch" placeholder="Search or create new student..." autocomplete="off">
+                </div>
+                <div id="searchResults" class="search-results"></div>
             </div>
         </div>
 
@@ -272,18 +269,72 @@
         // Load students dropdown when page loads
         window.addEventListener('load', loadStudentsDropdown);
         
-        async function loadStudentsDropdown() {
-            const response = await fetch('/api/students');
-            const students = await response.json();
+        let searchTimeout;
+        const searchResults = document.getElementById('searchResults');
+        const searchInput = document.getElementById('studentSearch');
+
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
             
-            const studentSelect = document.getElementById('studentSelect');
-            studentSelect.innerHTML = '<option value="">Select a student...</option>' +
-                students.map(student => 
-                    `<option value="${student.student_id}" data-name="${student.name}">
+            if (query.length === 0) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(async () => {
+                const response = await fetch(`/api/search_student?query=${encodeURIComponent(query)}`);
+                const students = await response.json();
+                
+                let resultsHtml = students.map(student => `
+                    <div class="search-result-item" onclick="selectStudent(${student.student_id}, '${student.name}')">
+                        <i class="fas fa-user"></i>
                         ${student.name}
-                    </option>`
-                ).join('');
+                    </div>
+                `).join('');
+                
+                // Add create new option if no exact match
+                if (!students.some(s => s.name.toLowerCase() === query.toLowerCase())) {
+                    resultsHtml += `
+                        <div class="search-result-item create-new-option" onclick="createNewStudent('${query}')">
+                            <i class="fas fa-plus"></i>
+                            Create new student: ${query}
+                        </div>
+                    `;
+                }
+                
+                searchResults.innerHTML = resultsHtml;
+                searchResults.style.display = 'block';
+            }, 300);
+        });
+
+        async function createNewStudent(name) {
+            const response = await fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                searchInput.value = name;
+                searchResults.style.display = 'none';
+                await loadStudentsTable();
+                selectStudent(data.student_id, name);
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to create student');
+            }
         }
+
+        // Close search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                searchResults.style.display = 'none';
+            }
+        });
 
         function handleStudentSelect(selectElement) {
             const selectedOption = selectElement.options[selectElement.selectedIndex];

@@ -36,7 +36,7 @@ def handle_students():
         
         students_df = pd.concat([students_df, new_student], ignore_index=True)
         students_df.to_csv('students.csv', index=False)
-        return jsonify({"status": "success"})
+        return jsonify({"status": "success", "student_id": int(new_id)})
 
 @app.route('/api/search_student', methods=['GET'])
 def search_student():

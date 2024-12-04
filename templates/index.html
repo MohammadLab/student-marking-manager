@@ -22,12 +22,19 @@
             </div>
         </div>
         
-        <div class="search-section">
-            <div class="search-wrapper">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" id="studentSearch" placeholder="Search student name...">
+        <div class="student-section">
+            <div class="create-student">
+                <input type="text" id="newStudentName" placeholder="Enter student name...">
+                <button onclick="createStudent()"><i class="fas fa-user-plus"></i> Add Student</button>
             </div>
-            <div id="searchResults" class="search-results"></div>
+            
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="studentSearch" placeholder="Search student name...">
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
         </div>
 
         <div class="marks-section" id="marksSection" style="display: none;">
@@ -53,6 +60,33 @@
 
     <script>
         let selectedStudentId = null;
+        
+        async function createStudent() {
+            const studentName = document.getElementById('newStudentName').value.trim();
+            
+            if (!studentName) {
+                alert('Please enter a student name');
+                return;
+            }
+            
+            const response = await fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: studentName
+                })
+            });
+            
+            if (response.ok) {
+                document.getElementById('newStudentName').value = '';
+                alert('Student created successfully');
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to create student');
+            }
+        }
         
         // Load labs when page loads
         window.addEventListener('load', loadLabs);

@@ -147,8 +147,13 @@
             const labs = await response.json();
             
             const labsHtml = labs.map(lab => 
-                `<div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
-                    ${lab.lab_name}
+                `<div class="lab-container">
+                    <div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
+                        ${lab.lab_name}
+                    </div>
+                    <button class="mark-button" onclick="showMarkInput('${lab.lab_name}')" style="display: none;">
+                        <i class="fas fa-plus"></i> Add Mark
+                    </button>
                 </div>`
             ).join('');
             
@@ -166,8 +171,54 @@
             document.querySelectorAll('.lab-item').forEach(item => {
                 item.classList.remove('selected');
             });
+            // Hide all mark buttons
+            document.querySelectorAll('.mark-button').forEach(btn => {
+                btn.style.display = 'none';
+            });
             // Add selected class to clicked lab
             element.classList.add('selected');
+            // Show mark button for selected lab
+            element.parentElement.querySelector('.mark-button').style.display = 'block';
+        }
+
+        function showMarkInput(labName) {
+            const mark = prompt(`Enter mark for ${labName}:`);
+            if (mark === null) return;  // User cancelled
+            
+            const numMark = parseInt(mark);
+            if (isNaN(numMark) || numMark < 0 || numMark > 100) {
+                alert('Please enter a valid mark between 0 and 100');
+                return;
+            }
+
+            // Add the mark
+            addMarkForLab(labName, numMark);
+        }
+
+        async function addMarkForLab(labName, mark) {
+            if (!selectedStudentId) {
+                alert('Please select a student first');
+                return;
+            }
+
+            const response = await fetch('/api/add_mark', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    student_id: selectedStudentId,
+                    lab_name: labName,
+                    mark: mark
+                })
+            });
+
+            if (response.ok) {
+                await loadMarks(selectedStudentId);
+                await loadStudentsTable();
+            } else {
+                alert('Failed to add mark');
+            }
         }
 
         async function createLab() {

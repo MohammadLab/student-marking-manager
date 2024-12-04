@@ -15,9 +15,20 @@
             <h2>Labs</h2>
             <div class="labs-container">
                 <div id="labsList"></div>
-                <div class="create-lab">
+                <button class="add-lab-button" onclick="showLabModal()">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <!-- Lab Creation Modal -->
+            <div id="labModal" class="modal">
+                <div class="modal-content">
+                    <h3>Create New Lab</h3>
                     <input type="text" id="newLabName" placeholder="Enter new lab name...">
-                    <button onclick="createLab()"><i class="fas fa-plus"></i> Create Lab</button>
+                    <div class="modal-buttons">
+                        <button onclick="hideLabModal()">Cancel</button>
+                        <button onclick="createLab()">Create</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -220,6 +231,16 @@
             }
         }
 
+        function showLabModal() {
+            document.getElementById('labModal').style.display = 'flex';
+            document.getElementById('newLabName').focus();
+        }
+
+        function hideLabModal() {
+            document.getElementById('labModal').style.display = 'none';
+            document.getElementById('newLabName').value = '';
+        }
+
         async function createLab() {
             const labName = document.getElementById('newLabName').value.trim();
             
@@ -241,6 +262,7 @@
             if (response.ok) {
                 document.getElementById('newLabName').value = '';
                 await loadLabs();
+                hideLabModal();
             } else {
                 const error = await response.json();
                 alert(error.message || 'Failed to create lab');

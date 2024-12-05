@@ -220,8 +220,13 @@
             const labs = await response.json();
             
             const labsHtml = labs.map(lab => 
-                `<div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
-                    ${lab.lab_name}
+                `<div class="lab-container">
+                    <div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
+                        ${lab.lab_name}
+                    </div>
+                    <button class="mark-button" onclick="showMarkInput('${lab.lab_name}')">
+                        Add Mark
+                    </button>
                 </div>`
             ).join('');
             
@@ -247,6 +252,20 @@
             
             // Show mark input section if both student and lab are selected
             updateMarkInputVisibility();
+        }
+
+        function showMarkInput(labName) {
+            selectedLabName = labName;
+            // Show mark input section if student is selected
+            if (selectedStudentName) {
+                document.getElementById('markInputSection').style.display = 'block';
+                document.getElementById('selectedLabName').textContent = labName;
+                document.getElementById('selectedStudentName').textContent = selectedStudentName;
+                // Scroll to mark input section
+                document.getElementById('markInputSection').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Please select a student first');
+            }
         }
 
         function updateMarkInputVisibility() {

@@ -284,6 +284,32 @@ h2, h3 {
     padding-left: 45px;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
+}
+
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #252525;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+    background-color: #2d2d2d;
 }
 
 /* Modern scrollbar */

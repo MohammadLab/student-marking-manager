@@ -93,11 +93,16 @@
             const searchInput = document.getElementById('studentSearch');
             const addButton = document.getElementById('addStudentBtn');
 
+            // Create a suggestions div
+            const suggestionsDiv = document.createElement('div');
+            suggestionsDiv.className = 'suggestions';
+            searchInput.parentNode.appendChild(suggestionsDiv);
+
             searchInput.addEventListener('input', (e) => {
                 const value = e.target.value.trim().toLowerCase();
                 
-                // Clear previous options
-                datalist.innerHTML = '';
+                // Clear previous suggestions
+                suggestionsDiv.innerHTML = '';
                 
                 if (value) {
                     // Filter students that partially match the search term
@@ -105,11 +110,18 @@
                         student.name.toLowerCase().includes(value)
                     );
                     
-                    // Add matching options to datalist
+                    // Add matching suggestions
                     matches.forEach(student => {
-                        const option = document.createElement('option');
-                        option.value = student.name;
-                        datalist.appendChild(option);
+                        const suggestion = document.createElement('div');
+                        suggestion.className = 'suggestion-item';
+                        suggestion.textContent = student.name;
+                        suggestion.addEventListener('click', () => {
+                            searchInput.value = student.name;
+                            suggestionsDiv.innerHTML = '';
+                            selectedStudentName = student.name;
+                            updateMarkInputVisibility();
+                        });
+                        suggestionsDiv.appendChild(suggestion);
                     });
                     
                     // Show add button if no exact match exists
@@ -117,14 +129,19 @@
                         student.name.toLowerCase() === value
                     );
                     addButton.style.display = !exactMatch ? 'block' : 'none';
+                    
+                    // Show suggestions
+                    suggestionsDiv.style.display = matches.length > 0 ? 'block' : 'none';
                 } else {
-                    // If search is empty, show all students
-                    studentsData.forEach(student => {
-                        const option = document.createElement('option');
-                        option.value = student.name;
-                        datalist.appendChild(option);
-                    });
+                    suggestionsDiv.style.display = 'none';
                     addButton.style.display = 'none';
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.style.display = 'none';
                 }
             });
         }

@@ -237,23 +237,22 @@
         let selectedLabName = null;
 
         function handleLabClick(element, labName) {
-            // Remove selected class from all labs
-            document.querySelectorAll('.lab-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            // Add selected class to clicked lab
-            element.classList.add('selected');
-            selectedLabName = labName;
+            // Toggle selected class on clicked lab
+            element.classList.toggle('selected');
             
-            // Show mark input section if student is selected
-            if (selectedStudentName) {
+            // Get all selected labs
+            const selectedLabs = Array.from(document.querySelectorAll('.lab-item.selected'))
+                .map(el => el.textContent.trim());
+            
+            // Show mark input section if student is selected and at least one lab is selected
+            if (selectedStudentName && selectedLabs.length > 0) {
                 document.getElementById('markInputSection').style.display = 'block';
-                document.getElementById('selectedLabName').textContent = labName;
+                document.getElementById('selectedLabName').textContent = selectedLabs.join(', ');
                 document.getElementById('selectedStudentName').textContent = selectedStudentName;
                 // Scroll to mark input section
                 document.getElementById('markInputSection').scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('Please select a student first');
+                document.getElementById('markInputSection').style.display = 'none';
             }
         }
 
@@ -269,8 +268,11 @@
         }
 
         async function submitMark() {
-            if (!selectedStudentName || !selectedLabName) {
-                alert('Please select both a student and a lab');
+            const selectedLabs = Array.from(document.querySelectorAll('.lab-item.selected'))
+                .map(el => el.textContent.trim());
+
+            if (!selectedStudentName || selectedLabs.length === 0) {
+                alert('Please select both a student and at least one lab');
                 return;
             }
 
@@ -282,28 +284,37 @@
                 return;
             }
 
-            const response = await fetch('/api/add_mark', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    student_name: selectedStudentName,
-                    lab_name: selectedLabName,
-                    mark: mark
+            // Submit mark for each selected lab
+            const promises = selectedLabs.map(labName => 
+                fetch('/api/add_mark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_name: selectedStudentName,
+                        lab_name: labName,
+                        mark: mark
+                    })
                 })
-            });
+            );
 
-            if (response.ok) {
+            try {
+                await Promise.all(promises);
                 markInput.value = '';
                 // Update both the marks display and the main table
                 await Promise.all([
                     loadMarks(selectedStudentName),
                     loadStudentsTable()
                 ]);
-                alert('Mark submitted successfully');
-            } else {
-                alert('Failed to add mark');
+                // Clear lab selections
+                document.querySelectorAll('.lab-item.selected').forEach(el => 
+                    el.classList.remove('selected')
+                );
+                document.getElementById('markInputSection').style.display = 'none';
+                alert('Marks submitted successfully');
+            } catch (error) {
+                alert('Failed to add marks');
             }
         }
 

@@ -195,33 +195,6 @@
         
         let selectedStudentName = null;
         
-        async function createStudent() {
-            const studentName = document.getElementById('newStudentName').value.trim();
-            
-            if (!studentName) {
-                alert('Please enter a student name');
-                return;
-            }
-            
-            const response = await fetch('/api/students', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: studentName
-                })
-            });
-            
-            if (response.ok) {
-                document.getElementById('newStudentName').value = '';
-                await loadStudentsDropdown();
-                alert('Student created successfully');
-            } else {
-                const error = await response.json();
-                alert(error.message || 'Failed to create student');
-            }
-        }
         
         // Load labs when page loads
         window.addEventListener('load', loadLabs);

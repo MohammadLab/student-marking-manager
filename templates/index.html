@@ -262,13 +262,14 @@
             if (selectedStudentName && selectedLabName) {
                 markInputSection.style.display = 'block';
                 document.getElementById('selectedLabName').textContent = selectedLabName;
+                document.getElementById('selectedStudentName').textContent = selectedStudentName;
             } else {
                 markInputSection.style.display = 'none';
             }
         }
 
         async function submitMark() {
-            if (!selectedStudentId || !selectedLabName) {
+            if (!selectedStudentName || !selectedLabName) {
                 alert('Please select both a student and a lab');
                 return;
             }

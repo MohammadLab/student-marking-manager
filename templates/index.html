@@ -298,14 +298,31 @@
             );
 
             try {
-                // Wait for all mark submissions and check their responses
-                const results = await Promise.all(promises);
-                
-                // Check if all requests were successful
-                const failedRequests = results.filter(response => !response.ok);
-                
-                if (failedRequests.length > 0) {
-                    throw new Error(`Failed to add marks to ${failedRequests.length} labs`);
+                // Submit each request individually to better handle errors
+                const results = [];
+                for (const labName of selectedLabs) {
+                    try {
+                        const response = await fetch('/api/add_mark', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                student_name: selectedStudentName,
+                                lab_name: labName,
+                                mark: mark
+                            })
+                        });
+                        
+                        if (!response.ok) {
+                            console.error(`Failed to add mark for lab ${labName}:`, await response.text());
+                            throw new Error(`Failed to add mark for ${labName}`);
+                        }
+                        results.push(labName);
+                    } catch (err) {
+                        console.error(`Error adding mark for ${labName}:`, err);
+                        throw new Error(`Failed to add mark for ${labName}: ${err.message}`);
+                    }
                 }
                 
                 markInput.value = '';

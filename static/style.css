@@ -96,12 +96,10 @@ body {
 }
 
 .add-lab-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     background-color: #2563eb;
     color: white;
     display: flex;
@@ -111,6 +109,7 @@ body {
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     border: none;
     padding: 0;
+    margin-bottom: 15px;
 }
 
 .add-lab-button:hover {

@@ -298,7 +298,16 @@
             );
 
             try {
-                await Promise.all(promises);
+                // Wait for all mark submissions and check their responses
+                const results = await Promise.all(promises);
+                
+                // Check if all requests were successful
+                const failedRequests = results.filter(response => !response.ok);
+                
+                if (failedRequests.length > 0) {
+                    throw new Error(`Failed to add marks to ${failedRequests.length} labs`);
+                }
+                
                 markInput.value = '';
                 // Update both the marks display and the main table
                 await Promise.all([
@@ -310,9 +319,11 @@
                     el.classList.remove('selected')
                 );
                 document.getElementById('markInputSection').style.display = 'none';
-                alert('Marks submitted successfully');
+                
+                alert(`Successfully added mark ${mark}% to ${selectedLabs.length} labs`);
             } catch (error) {
-                alert('Failed to add marks');
+                console.error('Error submitting marks:', error);
+                alert(error.message || 'Failed to add marks. Please try again.');
             }
         }
 

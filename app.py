@@ -16,6 +16,19 @@ if not os.path.exists('labs.csv'):
 def index():
     return render_template('index.html')
 
+@app.route('/api/students', methods=['POST'])
+def create_student():
+    data = request.json
+    students_df = pd.read_csv('students.csv')
+    
+    if data['name'] in students_df['name'].values:
+        return jsonify({"status": "error", "message": "Student already exists"}), 400
+        
+    new_student = pd.DataFrame([{'name': data['name']}])
+    students_df = pd.concat([students_df, new_student], ignore_index=True)
+    students_df.to_csv('students.csv', index=False)
+    return jsonify({"status": "success"})
+
 
 @app.route('/api/add_mark', methods=['POST'])
 def add_mark():

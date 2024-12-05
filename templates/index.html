@@ -10,6 +10,15 @@
 <body>
     <div class="container">
         <h1>Student Marks Manager</h1>
+
+        <div class="student-search-section">
+            <h2>Select Student</h2>
+            <div class="search-container">
+                <input type="text" id="studentSearch" placeholder="Type student name..." list="studentsList">
+                <datalist id="studentsList"></datalist>
+                <button id="addStudentBtn" style="display: none;" onclick="createStudent()">Add New Student</button>
+            </div>
+        </div>
         
         <div class="labs-section">
             <h2>Labs</h2>
@@ -70,8 +79,64 @@
     </div>
 
     <script>
-        // Load the students table when page loads
-        window.addEventListener('load', loadStudentsTable);
+        // Load the students table and populate student search when page loads
+        window.addEventListener('load', () => {
+            loadStudentsTable();
+            setupStudentSearch();
+        });
+
+        async function setupStudentSearch() {
+            const response = await fetch('/api/all_students_marks');
+            const studentsData = await response.json();
+            
+            const datalist = document.getElementById('studentsList');
+            datalist.innerHTML = studentsData.map(student => 
+                `<option value="${student.name}">`
+            ).join('');
+
+            const searchInput = document.getElementById('studentSearch');
+            const addButton = document.getElementById('addStudentBtn');
+
+            searchInput.addEventListener('input', (e) => {
+                const value = e.target.value.trim();
+                const exists = studentsData.some(student => 
+                    student.name.toLowerCase() === value.toLowerCase()
+                );
+                
+                addButton.style.display = value && !exists ? 'block' : 'none';
+            });
+        }
+
+        async function createStudent() {
+            const studentName = document.getElementById('studentSearch').value.trim();
+            
+            if (!studentName) {
+                alert('Please enter a student name');
+                return;
+            }
+            
+            const response = await fetch('/api/students', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: studentName
+                })
+            });
+            
+            if (response.ok) {
+                await Promise.all([
+                    loadStudentsTable(),
+                    setupStudentSearch()
+                ]);
+                document.getElementById('addStudentBtn').style.display = 'none';
+                alert('Student created successfully');
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to create student');
+            }
+        }
         
         async function loadStudentsTable() {
             const [studentsResponse, labsResponse] = await Promise.all([

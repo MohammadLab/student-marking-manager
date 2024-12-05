@@ -19,6 +19,25 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.student-search-section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#studentSearch {
+    flex: 1;
+    max-width: 300px;
+}
+
 .labs-section {
     margin-bottom: 40px;
     padding: 30px;

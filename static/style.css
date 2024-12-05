@@ -287,19 +287,26 @@ h2, h3 {
     position: relative;
 }
 
+.search-container {
+    position: relative;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
 .suggestions {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     left: 0;
-    right: 0;
+    width: 300px;
     background-color: #252525;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    margin-top: 4px;
     max-height: 200px;
     overflow-y: auto;
     display: none;
     z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .suggestion-item {

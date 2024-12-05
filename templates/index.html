@@ -220,13 +220,8 @@
             const labs = await response.json();
             
             const labsHtml = labs.map(lab => 
-                `<div class="lab-container">
-                    <div class="lab-item" onclick="selectLab(this, '${lab.lab_name}')">
-                        ${lab.lab_name}
-                    </div>
-                    <button class="mark-button" onclick="showMarkInput('${lab.lab_name}')">
-                        Add Mark
-                    </button>
+                `<div class="lab-item" onclick="handleLabClick(this, '${lab.lab_name}')">
+                    ${lab.lab_name}
                 </div>`
             ).join('');
             
@@ -241,7 +236,7 @@
         
         let selectedLabName = null;
 
-        function selectLab(element, labName) {
+        function handleLabClick(element, labName) {
             // Remove selected class from all labs
             document.querySelectorAll('.lab-item').forEach(item => {
                 item.classList.remove('selected');
@@ -250,12 +245,6 @@
             element.classList.add('selected');
             selectedLabName = labName;
             
-            // Show mark input section if both student and lab are selected
-            updateMarkInputVisibility();
-        }
-
-        function showMarkInput(labName) {
-            selectedLabName = labName;
             // Show mark input section if student is selected
             if (selectedStudentName) {
                 document.getElementById('markInputSection').style.display = 'block';

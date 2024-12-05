@@ -64,30 +64,6 @@ body {
     max-width: 100%;
 }
 
-.lab-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: center;
-}
-
-.mark-button {
-    width: 100%;
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    background-color: #15803d;
-    border-radius: 6px;
-}
-
-.mark-button:hover {
-    background-color: #166534;
-}
-
-.lab-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
 
 .lab-item {
     display: flex;

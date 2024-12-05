@@ -6,9 +6,9 @@ app = Flask(__name__)
 
 # Initialize CSV files if they don't exist
 if not os.path.exists('students.csv'):
-    pd.DataFrame(columns=['student_id', 'name']).to_csv('students.csv', index=False)
+    pd.DataFrame(columns=['name']).to_csv('students.csv', index=False)
 if not os.path.exists('marks.csv'):
-    pd.DataFrame(columns=['student_id', 'lab_name', 'mark']).to_csv('marks.csv', index=False)
+    pd.DataFrame(columns=['student_name', 'lab_name', 'mark']).to_csv('marks.csv', index=False)
 if not os.path.exists('labs.csv'):
     pd.DataFrame(columns=['lab_name']).to_csv('labs.csv', index=False)
 
@@ -24,14 +24,18 @@ def add_mark():
     
     # Update existing mark or add new one
     existing = marks_df[
-        (marks_df['student_id'] == data['student_id']) & 
+        (marks_df['student_name'] == data['student_name']) & 
         (marks_df['lab_name'] == data['lab_name'])
     ]
     
     if len(existing) > 0:
         marks_df.loc[existing.index, 'mark'] = data['mark']
     else:
-        new_mark = pd.DataFrame([data])
+        new_mark = pd.DataFrame({
+            'student_name': [data['student_name']],
+            'lab_name': [data['lab_name']],
+            'mark': [data['mark']]
+        })
         marks_df = pd.concat([marks_df, new_mark], ignore_index=True)
     
     marks_df.to_csv('marks.csv', index=False)
@@ -55,10 +59,10 @@ def create_lab():
     labs_df.to_csv('labs.csv', index=False)
     return jsonify({"status": "success"})
 
-@app.route('/api/get_marks/<student_id>')
-def get_marks(student_id):
+@app.route('/api/get_marks/<student_name>')
+def get_marks(student_name):
     marks_df = pd.read_csv('marks.csv')
-    student_marks = marks_df[marks_df['student_id'] == int(student_id)]
+    student_marks = marks_df[marks_df['student_name'] == student_name]
     return jsonify(student_marks.to_dict('records'))
 
 @app.route('/api/all_students_marks')
@@ -72,13 +76,12 @@ def all_students_marks():
     
     for _, student in students_df.iterrows():
         student_data = {
-            'student_id': student['student_id'],
             'name': student['name'],
             'marks': {}
         }
         
         # Get all marks for this student
-        student_marks = marks_df[marks_df['student_id'] == student['student_id']]
+        student_marks = marks_df[marks_df['student_name'] == student['name']]
         
         # Initialize all labs with None (no mark)
         for _, lab in labs_df.iterrows():

@@ -106,7 +106,7 @@
             });
         }
         
-        let selectedStudentId = null;
+        let selectedStudentName = null;
         
         async function createStudent() {
             const studentName = document.getElementById('newStudentName').value.trim();
@@ -175,7 +175,7 @@
 
         function updateMarkInputVisibility() {
             const markInputSection = document.getElementById('markInputSection');
-            if (selectedStudentId && selectedLabName) {
+            if (selectedStudentName && selectedLabName) {
                 markInputSection.style.display = 'block';
                 document.getElementById('selectedLabName').textContent = selectedLabName;
             } else {
@@ -203,7 +203,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    student_id: selectedStudentId,
+                    student_name: selectedStudentName,
                     lab_name: selectedLabName,
                     mark: mark
                 })

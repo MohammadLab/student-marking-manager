@@ -20,7 +20,7 @@ A web-based application for managing student lab marks with an intuitive interfa
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/student-marks-manager.git
+git clone https://github.com/YOUR_ACTUAL_GITHUB_USERNAME/student-marks-manager.git
 cd student-marks-manager
 ```
 

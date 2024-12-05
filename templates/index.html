@@ -90,20 +90,42 @@
             const studentsData = await response.json();
             
             const datalist = document.getElementById('studentsList');
-            datalist.innerHTML = studentsData.map(student => 
-                `<option value="${student.name}">`
-            ).join('');
-
             const searchInput = document.getElementById('studentSearch');
             const addButton = document.getElementById('addStudentBtn');
 
             searchInput.addEventListener('input', (e) => {
-                const value = e.target.value.trim();
-                const exists = studentsData.some(student => 
-                    student.name.toLowerCase() === value.toLowerCase()
-                );
+                const value = e.target.value.trim().toLowerCase();
                 
-                addButton.style.display = value && !exists ? 'block' : 'none';
+                // Clear previous options
+                datalist.innerHTML = '';
+                
+                if (value) {
+                    // Filter students that partially match the search term
+                    const matches = studentsData.filter(student => 
+                        student.name.toLowerCase().includes(value)
+                    );
+                    
+                    // Add matching options to datalist
+                    matches.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.name;
+                        datalist.appendChild(option);
+                    });
+                    
+                    // Show add button if no exact match exists
+                    const exactMatch = studentsData.some(student => 
+                        student.name.toLowerCase() === value
+                    );
+                    addButton.style.display = !exactMatch ? 'block' : 'none';
+                } else {
+                    // If search is empty, show all students
+                    studentsData.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student.name;
+                        datalist.appendChild(option);
+                    });
+                    addButton.style.display = 'none';
+                }
             });
         }
 

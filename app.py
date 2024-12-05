@@ -16,34 +16,6 @@ if not os.path.exists('labs.csv'):
 def index():
     return render_template('index.html')
 
-@app.route('/api/students', methods=['GET', 'POST'])
-def handle_students():
-    if request.method == 'GET':
-        students = pd.read_csv('students.csv')
-        return jsonify(students.to_dict('records'))
-    
-    elif request.method == 'POST':
-        data = request.json
-        students_df = pd.read_csv('students.csv')
-        
-        # Generate new student ID
-        new_id = 1 if len(students_df) == 0 else students_df['student_id'].max() + 1
-        
-        new_student = pd.DataFrame([{
-            'student_id': new_id,
-            'name': data['name']
-        }])
-        
-        students_df = pd.concat([students_df, new_student], ignore_index=True)
-        students_df.to_csv('students.csv', index=False)
-        return jsonify({"status": "success", "student_id": int(new_id)})
-
-@app.route('/api/search_student', methods=['GET'])
-def search_student():
-    query = request.args.get('query', '').lower()
-    students = pd.read_csv('students.csv')
-    filtered = students[students['name'].str.lower().str.contains(query, na=False)]
-    return jsonify(filtered.to_dict('records'))
 
 @app.route('/api/add_mark', methods=['POST'])
 def add_mark():
